@@ -473,11 +473,3 @@ var disabledSubscription = moira.SubscriptionData{
 	Contacts:          []string{contact.ID},
 	ThrottlingEnabled: true,
 }
-
-var multipleTagsSubscription = moira.SubscriptionData{
-	ID:                "subscriptionID-00000000000003",
-	Enabled:           true,
-	Tags:              []string{"test-tag", "one-more-tag"},
-	Contacts:          []string{contact.ID},
-	ThrottlingEnabled: true,
-}
