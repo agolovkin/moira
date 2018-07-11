@@ -61,6 +61,7 @@ type ContactData struct {
 type SubscriptionData struct {
 	Contacts          []string     `json:"contacts"`
 	Tags              []string     `json:"tags"`
+	Grades            []string     `json:"grades"`
 	Schedule          ScheduleData `json:"sched"`
 	ID                string       `json:"id"`
 	Enabled           bool         `json:"enabled"`

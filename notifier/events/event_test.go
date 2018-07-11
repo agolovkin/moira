@@ -122,7 +122,7 @@ func TestNoSubscription(t *testing.T) {
 		}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		dataBase.EXPECT().GetTagsSubscriptions(append(triggerData.Tags, event.GetEventTags()...)).Times(1).Return(make([]*moira.SubscriptionData, 0), nil)
+		dataBase.EXPECT().GetTagsSubscriptions(append(triggerData.Tags, event.GetEventGrades()...)).Times(1).Return(make([]*moira.SubscriptionData, 0), nil)
 
 		err := worker.processEvent(event)
 		So(err, ShouldBeEmpty)
@@ -151,7 +151,7 @@ func TestDisabledNotification(t *testing.T) {
 		}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{&disabledSubscription}, nil)
 
 		logger.EXPECT().Debugf("Processing trigger id %s for metric %s == %f, %s -> %s", event.TriggerID, event.Metric, moira.UseFloat64(event.Value), event.OldState, event.State)
@@ -185,7 +185,7 @@ func TestExtraTags(t *testing.T) {
 		}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{&multipleTagsSubscription}, nil)
 
 		logger.EXPECT().Debugf("Processing trigger id %s for metric %s == %f, %s -> %s", event.TriggerID, event.Metric, moira.UseFloat64(event.Value), event.OldState, event.State)
@@ -221,7 +221,7 @@ func TestAddNotification(t *testing.T) {
 		emptyNotification := moira.ScheduledNotification{}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{&subscription}, nil)
 		dataBase.EXPECT().GetContact(contact.ID).Times(1).Return(contact, nil)
 		scheduler.EXPECT().ScheduleNotification(gomock.Any(), event, triggerData, contact, false, 0).Times(1).Return(&emptyNotification)
@@ -259,7 +259,7 @@ func TestAddOneNotificationByTwoSubscriptionsWithSame(t *testing.T) {
 		notification2 := moira.ScheduledNotification{}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{&subscription, &subscription4}, nil)
 		dataBase.EXPECT().GetContact(contact.ID).Times(2).Return(contact, nil)
 
@@ -294,7 +294,7 @@ func TestFailReadContact(t *testing.T) {
 		}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{&subscription}, nil)
 		getContactError := fmt.Errorf("Can not get contact")
 		dataBase.EXPECT().GetContact(contact.ID).Times(1).Return(moira.ContactData{}, getContactError)
@@ -330,7 +330,7 @@ func TestEmptySubscriptions(t *testing.T) {
 		}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{{ThrottlingEnabled: true}}, nil)
 
 		logger.EXPECT().Debugf("Processing trigger id %s for metric %s == %f, %s -> %s", event.TriggerID, event.Metric, moira.UseFloat64(event.Value), event.OldState, event.State)
@@ -361,7 +361,7 @@ func TestEmptySubscriptions(t *testing.T) {
 		}
 
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{nil}, nil)
 
 		logger.EXPECT().Debugf("Processing trigger id %s for metric %s == %f, %s -> %s", event.TriggerID, event.Metric, moira.UseFloat64(event.Value), event.OldState, event.State)
@@ -442,7 +442,7 @@ func TestGoRoutine(t *testing.T) {
 			})
 		})
 		dataBase.EXPECT().GetTrigger(event.TriggerID).Times(1).Return(trigger, nil)
-		tags := append(triggerData.Tags, event.GetEventTags()...)
+		tags := append(triggerData.Tags, event.GetEventGrades()...)
 		dataBase.EXPECT().GetTagsSubscriptions(tags).Times(1).Return([]*moira.SubscriptionData{&subscription}, nil)
 		dataBase.EXPECT().GetContact(contact.ID).Times(1).Return(contact, nil)
 		scheduler.EXPECT().ScheduleNotification(gomock.Any(), event, triggerData, contact, false, 0).Times(1).Return(&emptyNotification)
